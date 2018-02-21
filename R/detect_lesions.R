@@ -63,19 +63,20 @@ detect_hiperintensities <- function(flair_image, mask = flair_image > 0, pre_par
   # lesions[pre_parcellation == 0] <- 0
 
   lesions[brain_mask == 0] <- 0
-  # GM_mask <- pre_parcellation
-  # GM_mask[GM_mask > 116] <- 0
-  # GM_mask[GM_mask > 0] <- 1
+  GM_mask <- pre_parcellation
+  GM_mask[GM_mask > 116] <- 0
+  GM_mask[GM_mask > 0] <- 1
+  GM_mask <- ANTsR::as.array(iMath(as.antsImage(GM_mask), "MD"))
   # GM_mask <- as_array(dilation_by_distance(convert_to_int(create(GM_mask)), radius = 0.1))
-  # lesions[GM_mask > 0] <- 0
+  lesions[GM_mask > 0] <- 0
   # lesions[pre_parcellation == 300] <- 0
   spinal_cord <- pre_parcellation * (pre_parcellation == 300)
   spinal_cord[spinal_cord > 0] <- 1
-  spinal_cord_mask <- ANTsR::as.array(iMath(as.antsImage(spinal_cord, "MD")))
+  spinal_cord_mask <- ANTsR::as.array(iMath(as.antsImage(spinal_cord), "MD"))
   # spinal_cord_mask <- as_array(dilation_by_distance(mask_values(create(spinal_cord), 299.5, 300.5, 1, 0), radius = 1.5))
   lesions[spinal_cord_mask > 0] <- 0
 
-  lesions <- ANTsR::as.array(iMath(as.antsImage(lesions, "MO")))
+  lesions <- ANTsR::as.array(iMath(as.antsImage(lesions), "MO"))
   # RNiftiExtension::opening(lesions, radius = 1)
   # lesions <- remove_small_cc_ptr(lesions)
   lesions[flair_image > threshold_severe & lesions > 0] <- 2

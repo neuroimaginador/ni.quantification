@@ -4,7 +4,7 @@ lesion_segmentation_flow <- function() {
 
   flow$add(inputs = "FLAIR")
 
-  flow$add(what = resample,
+  flow$add(what = function(i) corregister(ref_image = get_atlas("FLAIR"), mov_image = i),
            inputs = "FLAIR",
            output = "FLAIR_1mm")
 

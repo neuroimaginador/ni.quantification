@@ -21,13 +21,17 @@ basic_volumetry_flow <- function() {
 
   flow$add(what = make_brain_extraction,
            inputs = c("T1_bias_field"),
+           output = "brain_mask")
+
+  flow$add(what = function(A, B) {A * B},
+           inputs = c("T1_bias_field", "brain_mask"),
            output = "betted_image")
 
-  flow$add(what = make_segmentation_iter_sigma1,
+  flow$add(what = make_segmentation_malf,
            inputs = "betted_image",
            output = "segmentation")
 
-  flow$add(what = quantify_ROIs,
+  flow$add(what = count_by_ROI,
            inputs = "segmentation",
            output = "basic_volumetry")
 

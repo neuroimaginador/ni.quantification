@@ -16,12 +16,15 @@ make_parcellation <- function(betted_image, segmentation, subcortical_parcellati
   atlasMNI <- read_nifti_to_array(filename)
   dim(atlasMNI) <- c(dim(atlasMNI), 1)
 
-  GM_parcellation <- apply_atlas_fusion_opal_omp(input_image = betted_image,
-                                                 template4D = brain.mni,
-                                                 labels4D = atlasMNI,
-                                                 label_ids = c(0, 1:116),
-                                                 k = 3,
-                                                 kernel_width = 0)
+  original_image <- betted_image
+  betted_image <- map(source = betted_image, target = brain.mni[, , , 1], nbins = 128)
+
+  GM_parcellation <- malf(input_image = betted_image,
+                          mask = original_image > 0,
+                          template4D = brain.mni,
+                          labels4D = atlasMNI,
+                          label_ids = c(0, 1:116),
+                          kernel_width = 0)
 
   GM_parcellation <- GM_parcellation * GM_mask
   GM_parcellation[subcortical_parcellation > 1 & subcortical_parcellation <= 116] <- subcortical_parcellation[subcortical_parcellation > 1 & subcortical_parcellation <= 116]
@@ -29,7 +32,7 @@ make_parcellation <- function(betted_image, segmentation, subcortical_parcellati
   GM_parcellation <- remove_small_cc(GM_parcellation, pctg = 0.25)
   GM_parcellation <- extend_labels(pIn = GM_parcellation, maskImage = GM_mask)
 
-  filename <- get_atlas("WM")
+  filename <- get_atlas("atlasWM")
   atlasMNI <- read_nifti_to_array(filename)
 
   WM_mask <- segmentation
@@ -40,12 +43,12 @@ make_parcellation <- function(betted_image, segmentation, subcortical_parcellati
   atlas20[atlas20 > 20] <- 0
   dim(atlas20) <- c(dim(atlas20), 1)
 
-  WM_parcellation <- apply_atlas_fusion_opal_omp(input_image = betted_image,
-                                                 template4D = brain.mni,
-                                                 labels4D = atlas20,
-                                                 label_ids = c(0, 1:20),
-                                                 k = 3,
-                                                 kernel_width = 0)
+  WM_parcellation <- malf(input_image = betted_image,
+                          mask = original_image > 0,
+                          template4D = brain.mni,
+                          labels4D = atlas20,
+                          label_ids = c(0, 1:20),
+                          kernel_width = 0)
 
   WM_parcellation <- WM_parcellation * WM_mask
 
