@@ -1,6 +1,10 @@
 bias_field_correction <- function(image) {
 
+  image <- image %>% as.array()
+
   require(ANTsR)
-  ANTsR::as.array(n4BiasFieldCorrection(img = as.antsImage(image)))
+  img <- abpN4(img = as.antsImage(image))
+
+  return(img %>% as.array())
 
 }

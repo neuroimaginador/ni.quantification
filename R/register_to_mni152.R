@@ -14,6 +14,6 @@ register_to_mni152 <- function(image) {
                                   typeofTransform = "AffineFast",
                                   verbose = TRUE)
 
-  return(ANTsR::as.array(transformed$warpedmovout))
+  return(as.array(transformed$warpedmovout))
 
 }
