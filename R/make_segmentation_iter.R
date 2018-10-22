@@ -27,7 +27,7 @@ make_segmentation_iter <- function(betted_image, sigma = 0) {
 
   print(params)
 
-  while (diff > 1) {
+  while (diff > 0.1) {
 
     mean_by_ROI_df <- mean_by_ROI(labelled = previous_seg, values = betted_image)
     PVE <- segmentation(betted_image, mean_by_ROI_df)
